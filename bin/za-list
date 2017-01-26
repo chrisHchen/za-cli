@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+var logger = require('../lib/logger')
+var request = require('request')
+var chalk = require('chalk')
+var conf = require('../lib/conf')
+var join = require('path').join
+var ora = require('ora')
+
+/**
+ * Padding.
+ */
+
+console.log()
+process.on('exit', function () {
+  console.log()
+})
+
+/**
+ * List repos.
+ */
+
+var config = conf.read()
+
+if(!config.host){
+  logger.fatal("please config repo host: za -h [host-name]")
+}
+
+var spinner = ora(' fetching template list')
+spinner.start()
+request({
+  url: 'http://' + join(config.host, '/api/v3/groups/', config.owner, 'projects')  +
+       '/?private_token=' + config.private_token + '&per_page=100',
+  timeout: 5000
+}, function (err, res, body) {
+  spinner.stop()
+  if (err) logger.fatal(err)
+  var requestBody = JSON.parse(body)
+  if (Array.isArray(requestBody)) {
+    console.log('  Available official templates:')
+    console.log()
+    requestBody.forEach(function (repo) {
+      console.log(
+        '  ' + chalk.yellow('★') +
+        '  ' + chalk.blue(repo.name) +
+        ' - ' + repo.description)
+    })
+  } else {
+    console.error(requestBody.message)
+  }
+})

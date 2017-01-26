@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+var logger = require('../lib/logger')
+var program = require('commander')
+var conf = require('../lib/conf')
+
+function valid (val) {
+  return typeof val == 'string' ?
+    val :
+    logger.fatal('you are trying to config a value, but the value is missing')
+}
+
+program
+  .version(require('../package').version)
+  .usage('<command> [options]')
+  .command('init', 'generate a new project from a template')
+  .command('list', 'list available templates')
+  .option('-h, --host [value]', 'Add host')
+  .option('-o, --owner [value]', 'Add owner')
+  .parse(process.argv)
+
+if(program.host || program.owner){
+  var obj = {}
+  if(program.host){
+    valid(program.host)
+    obj.host = program.host
+    .replace(/\s+/g, '')
+    .replace(/^http\:\/\/|https\:\/\/|.*\/\//, '')
+  }
+  if(program.owner){
+    valid(program.owner)
+    obj.owner = program.owner
+    .replace(/\s+/g, '')
+  }
+  conf.write(obj)
+}
