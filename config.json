@@ -1,8 +1,8 @@
 {
-    "type": "gitlab",
-    "host": "gitlab.zhonganonline.com",
+    "type": "",
+    "host": "",
     "private_token": "xd5KXkjXWrkd44rWxqu4",
-    "owner": "open",
+    "owner": "template",
     "name": "",
     "checkout": "master"
 }

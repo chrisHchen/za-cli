@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var download = require('download-git-repo')
+var download = require('../lib/download')
 var program = require('commander')
 var exists = require('fs').existsSync
 var os = require('os')
@@ -13,7 +13,7 @@ var inquirer = require('inquirer')
 var logger = require('../lib/logger')
 var generate = require('../lib/generate')
 var checkVersion = require('../lib/check-version')
-var warnings = require('../lib/warnings')
+var conf = require('../lib/conf')
 
 /**
  * Usage.
@@ -60,9 +60,10 @@ process.on('exit', function () {
 /**
  * Settings.
  */
+var config = conf.read()
 
-if(!conf.read().host){
- logger.fatal("please config repo host: za -h [host-name]")
+if(!config.host){
+  logger.fatal("please config repo host: za -h [host-name]")
 }
 
 var template = program.args[0]
@@ -95,6 +96,7 @@ if (exists(to)) {
 
 function run () {
   // check if template is local
+
   if (/^[./]|(\w:)/.test(template)) {
     var templatePath = template.charAt(0) === '/' || /^\w:/.test(template)
       ? template
@@ -112,19 +114,13 @@ function run () {
     checkVersion(function () {
       if (!hasSlash) {
         // use official templates
-        var officialTemplate = 'vuejs-templates/' + template
-        if (template.indexOf('#') !== -1) {
-          downloadAndGenerate(officialTemplate)
-        } else {
-          if (template.indexOf('-2.0') !== -1) {
-            warnings.v2SuffixTemplatesDeprecated(template, inPlace ? '' : name)
-            return
-          }
-
-          warnings.v2BranchIsNowDefault(template, inPlace ? '' : name)
-          downloadAndGenerate(officialTemplate)
-        }
+        // https://github.com/SBoudrias/Inquirer.js.git
+        var officialTemplate = "gitlab:" + config.host + ":" + path.join(config.owner, template) +
+                  "#" + config.checkout;
+        downloadAndGenerate(officialTemplate)
       } else {
+        template = "gitlab:" + config.host + ":" + template + "#" + config.checkout;
+        console.log(template)
         downloadAndGenerate(template)
       }
     })
@@ -138,8 +134,8 @@ function run () {
  */
 
 function downloadAndGenerate (template) {
-  var tmp = os.tmpdir() + '/vue-template-' + uid()
-  var spinner = ora(' downloading template')
+  var tmp = os.tmpdir() + '/za-template-' + uid()
+  var spinner = ora(' downloading template ')
   spinner.start()
   download(template, tmp, { clone: clone }, function (err) {
     spinner.stop()

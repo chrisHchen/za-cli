@@ -16,9 +16,10 @@ program
   .command('list', 'list available templates')
   .option('-h, --host [value]', 'Add host')
   .option('-o, --owner [value]', 'Add owner')
+  .option('-t, --token [value]', 'Add token')
   .parse(process.argv)
 
-if(program.host || program.owner){
+if(program.host || program.owner || program.token){
   var obj = {}
   if(program.host){
     valid(program.host)
@@ -29,6 +30,11 @@ if(program.host || program.owner){
   if(program.owner){
     valid(program.owner)
     obj.owner = program.owner
+    .replace(/\s+/g, '')
+  }
+  if(program.token){
+    valid(program.token)
+    obj.private_token = program.token
     .replace(/\s+/g, '')
   }
   conf.write(obj)
