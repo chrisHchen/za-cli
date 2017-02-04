@@ -84,6 +84,11 @@ if (exists(to)) {
   }], function (answers) {
     if (answers.ok) {
       run()
+    }else{
+      /**
+       * fix git bash do not exit this client on Windows
+       */
+      process.exit(0)
     }
   })
 } else {
@@ -115,7 +120,7 @@ function run () {
       if (!hasSlash) {
         // use official templates
         // https://github.com/SBoudrias/Inquirer.js.git
-        var officialTemplate = "gitlab:" + config.host + ":" + path.join(config.owner, template) +
+        var officialTemplate = "gitlab:" + config.host + ":" + config.owner + '/' + template +
                   "#" + config.checkout;
         downloadAndGenerate(officialTemplate)
       } else {
