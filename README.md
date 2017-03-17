@@ -9,28 +9,28 @@ $ npm install -g za-cli
 ```
 ###  Configuration
 
-###set host:
+#### set host:
 
 ``` bash
 $ za -h hostname
 ```
 For example: za -h gitlab.com
 
-###set owner/group:
+#### set owner/group:
 
 ``` bash
 $ za -o owner
 ```
 For example: za -o mygroup
 
-###set private_token:
+#### set private_token:
 
 ``` bash
 $ za -t token
 ```
 **Notice** setting token is required for gitlab api invokaction. it is only necessary if you need to list repos under configured owner, which will be metioned below.
 
-###shorthand:
+#### shorthand:
 ``` bash
 $ za -h hostname -o owner -t token
 ```
