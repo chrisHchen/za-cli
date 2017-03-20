@@ -4,9 +4,14 @@ var program = require('commander')
 var conf = require('../lib/conf')
 
 function valid (val) {
-  return typeof val == 'string' ?
-    val :
-    logger.fatal('you are trying to config a value, but the value is missing')
+  const type = typeof val
+  if(type == 'boolean'){
+    const json = conf.read()
+    console.log('current host: ' + json.host)
+    console.log('current owner: ' + json.owner)
+    console.log('current token: ' + json.private_token)
+    process.exit(0)
+  }
 }
 
 program
